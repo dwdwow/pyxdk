@@ -1,84 +1,128 @@
 import unittest
 from datetime import datetime
-from community import Community
+from community import Community, CommunityAccess, CommunityJoinPolicy
 
 class TestCommunity(unittest.TestCase):
     def setUp(self):
-        self.sample_community_data = {
-            "id": "Q29tbXVuaXR5OjE3NTg3NDc4MTc2NDI3MDA5MjI=",
-            "description": "Welcome to the Anime Community! Where anime fans gather to share their favorite shows and discuss everything anime-related.",
-            "join_policy": "Open",
-            "access": "Public",
-            "member_count": 39915,
-            "name": "Anime Community",
-            "created_at": "2024-02-17T06:58:50.000Z"
+        # Sample data for testing
+        self.community_data = {
+            'id': '1234567890',
+            'name': 'Python Developers',
+            'description': 'A community for Python developers',
+            'access': 'Public',
+            'join_policy': 'Open',
+            'member_count': 1000,
+            'created_at': '2023-01-01T12:00:00.000Z'
         }
-
-        self.sample_api_response = {
-            "data": [
-                self.sample_community_data,
-                {
-                    "id": "Q29tbXVuaXR5OjE1MDY3OTM5NTMxMDYwNDI4OTE=",
-                    "description": "Join and text about anime 🥰",
-                    "join_policy": "Open",
-                    "access": "Public",
-                    "member_count": 26019,
-                    "name": "Anime World 🌸",
-                    "created_at": "2022-03-24T00:44:07.000Z"
-                }
-            ],
-            "meta": {
-                "next_token": "7140dibdnow9c7btw481s8m561gat797rboud5r80xvzm"
-            }
-        }
-
-    def test_community_from_dict(self):
-        community = Community.from_dict(self.sample_community_data)
         
-        # Test basic attributes
-        self.assertEqual(community.id, "Q29tbXVuaXR5OjE3NTg3NDc4MTc2NDI3MDA5MjI=")
-        self.assertEqual(community.name, "Anime Community")
-        self.assertEqual(community.join_policy, "Open")
-        self.assertEqual(community.access, "Public")
-        self.assertEqual(community.member_count, 39915)
-        self.assertEqual(
-            community.description,
-            "Welcome to the Anime Community! Where anime fans gather to share their favorite shows and discuss everything anime-related."
-        )
+        # Create a community instance for testing
+        self.community = Community.from_dict(self.community_data)
+
+    def test_required_attributes(self):
+        """Test that required attributes are correctly set"""
+        self.assertEqual(self.community.id, '1234567890')
+        self.assertEqual(self.community.name, 'Python Developers')
+        self.assertEqual(self.community.member_count, 1000)
         
         # Test datetime conversion
-        self.assertIsInstance(community.created_at, datetime)
-        self.assertEqual(community.created_at.year, 2024)
-        self.assertEqual(community.created_at.month, 2)
-        self.assertEqual(community.created_at.day, 17)
-        self.assertEqual(community.created_at.hour, 6)
-        self.assertEqual(community.created_at.minute, 58)
-        self.assertEqual(community.created_at.second, 50)
+        expected_dt = datetime(2023, 1, 1, 12, 0, 0)
+        self.assertEqual(self.community.created_at, expected_dt)
+        self.assertIsInstance(self.community.created_at, datetime)
 
-    # def test_community_from_api_response(self):
-    #     result = Community.from_api_response(self.sample_api_response)
+    def test_optional_attributes(self):
+        """Test optional attributes handling"""
+        # Test with description
+        self.assertEqual(self.community.description, 'A community for Python developers')
         
-    #     # Test structure
-    #     self.assertIn('data', result)
-    #     self.assertIn('meta', result)
+        # Test without description
+        data_without_description = self.community_data.copy()
+        del data_without_description['description']
+        community = Community.from_dict(data_without_description)
+        self.assertIsNone(community.description)
+
+    def test_access_types(self):
+        """Test community access type handling"""
+        # Test Public access
+        self.assertEqual(self.community.access, CommunityAccess.PUBLIC)
+        self.assertEqual(self.community.access.value, 'Public')
         
-    #     # Test communities
-    #     self.assertEqual(len(result['data']), 2)
-    #     community = result['data'][0]
-    #     self.assertIsInstance(community, Community)
-    #     self.assertEqual(community.id, "Q29tbXVuaXR5OjE3NTg3NDc4MTc2NDI3MDA5MjI=")
-    #     self.assertEqual(community.name, "Anime Community")
+        # Test Closed access
+        closed_data = self.community_data.copy()
+        closed_data['access'] = 'Closed'
+        closed_community = Community.from_dict(closed_data)
+        self.assertEqual(closed_community.access, CommunityAccess.CLOSED)
+        self.assertEqual(closed_community.access.value, 'Closed')
         
-    #     # Test second community
-    #     community2 = result['data'][1]
-    #     self.assertEqual(community2.name, "Anime World 🌸")
-    #     self.assertEqual(community2.member_count, 26019)
+        # Test invalid access type
+        invalid_data = self.community_data.copy()
+        invalid_data['access'] = 'Invalid'
+        with self.assertRaises(ValueError):
+            Community.from_dict(invalid_data)
+
+    def test_join_policies(self):
+        """Test community join policy handling"""
+        policies = {
+            'Open': CommunityJoinPolicy.OPEN,
+            'RestrictedJoinRequestsDisabled': CommunityJoinPolicy.RESTRICTED_JOIN_REQUESTS_DISABLED,
+            'RestrictedJoinRequestsRequireAdminApproval': CommunityJoinPolicy.RESTRICTED_JOIN_REQUESTS_REQUIRE_ADMIN_APPROVAL,
+            'RestrictedJoinRequestsRequireModeratorApproval': CommunityJoinPolicy.RESTRICTED_JOIN_REQUESTS_REQUIRE_MODERATOR_APPROVAL,
+            'SuperFollowRequired': CommunityJoinPolicy.SUPER_FOLLOW_REQUIRED
+        }
         
-    #     # Test meta data
-    #     self.assertEqual(
-    #         result['meta']['next_token'],
-    #         "7140dibdnow9c7btw481s8m561gat797rboud5r80xvzm"
-    #     )
+        # Test all valid join policies
+        for policy_str, policy_enum in policies.items():
+            data = self.community_data.copy()
+            data['join_policy'] = policy_str
+            community = Community.from_dict(data)
+            self.assertEqual(community.join_policy, policy_enum)
+            self.assertEqual(community.join_policy.value, policy_str)
+        
+        # Test invalid join policy
+        invalid_data = self.community_data.copy()
+        invalid_data['join_policy'] = 'Invalid'
+        with self.assertRaises(ValueError):
+            Community.from_dict(invalid_data)
+
+    def test_minimal_community(self):
+        """Test community creation with minimal required data"""
+        minimal_data = {
+            'id': '1234567890',
+            'name': 'Python Developers',
+            'access': 'Public',
+            'join_policy': 'Open',
+            'member_count': 1000,
+            'created_at': '2023-01-01T12:00:00.000Z'
+        }
+        
+        community = Community.from_dict(minimal_data)
+        
+        # Test required fields
+        self.assertEqual(community.id, '1234567890')
+        self.assertEqual(community.name, 'Python Developers')
+        self.assertEqual(community.access, CommunityAccess.PUBLIC)
+        self.assertEqual(community.join_policy, CommunityJoinPolicy.OPEN)
+        self.assertEqual(community.member_count, 1000)
+        self.assertIsInstance(community.created_at, datetime)
+        
+        # Test optional fields
+        self.assertIsNone(community.description)
+
+    def test_missing_required_fields(self):
+        """Test that missing required fields raise appropriate errors"""
+        required_fields = ['id', 'name', 'access', 'join_policy', 'member_count', 'created_at']
+        
+        for field in required_fields:
+            invalid_data = self.community_data.copy()
+            del invalid_data[field]
+            with self.assertRaises(KeyError):
+                Community.from_dict(invalid_data)
+
+    def test_invalid_datetime_format(self):
+        """Test handling of invalid datetime format"""
+        invalid_data = self.community_data.copy()
+        invalid_data['created_at'] = '2023-01-01'  # Invalid format
+        with self.assertRaises(ValueError):
+            Community.from_dict(invalid_data)
 
 if __name__ == '__main__':
     unittest.main() 

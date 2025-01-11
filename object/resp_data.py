@@ -15,19 +15,18 @@ from object.user import User
 DataItem = TypeVar('DataItem', Tweet, User, Space, List, Media, Poll, Place, Community, DirectMessageEvent)
 
 
-
 @dataclass
 class Includes:
-    tweets: Optional[list[Tweet]] = None
-    users: Optional[list[User]] = None
-    spaces: Optional[list[Space]] = None
-    lists: Optional[list[List]] = None
-    media: Optional[list[Media]] = None
-    polls: Optional[list[Poll]] = None
-    places: Optional[list[Place]] = None
-    communities: Optional[list[Community]] = None
-    direct_message_events: Optional[list[DirectMessageEvent]] = None
-    meta: Optional[Meta] = None
+    tweets: list[Tweet] | None
+    users: list[User] | None
+    spaces: list[Space] | None
+    lists: list[List] | None
+    media: list[Media] | None
+    polls: list[Poll] | None
+    places: list[Place] | None
+    communities: list[Community] | None
+    direct_message_events: list[DirectMessageEvent] | None
+    meta: Meta | None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Includes':

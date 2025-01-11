@@ -1,6 +1,10 @@
 from dataclasses import dataclass
-from typing import List, Dict, Optional
 from datetime import datetime
+from enum import Enum
+
+class VotingStatus(Enum):
+    OPEN = "open"
+    CLOSED = "closed"
 
 @dataclass
 class PollOption:
@@ -10,28 +14,43 @@ class PollOption:
 
 @dataclass
 class Poll:
+    # Required fields
     id: str
-    voting_status: str
-    duration_minutes: int
-    options: List[PollOption]
-    end_datetime: datetime
+    options: list[PollOption]
+    voting_status: VotingStatus
+    
+    # Optional fields
+    duration_minutes: int | None = None
+    end_datetime: datetime | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Poll':
-        # Convert options to PollOption objects
+        # Convert options array to list of PollOption objects
         options = [
-            PollOption(**option)
+            PollOption(
+                position=option['position'],
+                label=option['label'],
+                votes=option['votes']
+            )
             for option in data['options']
         ]
         
-        # Convert end_datetime string to datetime object
-        end_datetime = datetime.strptime(data['end_datetime'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        # Convert voting status string to enum
+        voting_status = VotingStatus(data['voting_status'])
+        
+        # Convert end_datetime string to datetime object if present
+        end_datetime = None
+        if 'end_datetime' in data and data['end_datetime']:
+            end_datetime = datetime.strptime(
+                data['end_datetime'],
+                '%Y-%m-%dT%H:%M:%S.%fZ'
+            )
         
         return cls(
             id=data['id'],
-            voting_status=data['voting_status'],
-            duration_minutes=data['duration_minutes'],
             options=options,
+            voting_status=voting_status,
+            duration_minutes=data.get('duration_minutes'),
             end_datetime=end_datetime
         )
 

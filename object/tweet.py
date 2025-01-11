@@ -1,22 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Any
 from datetime import datetime
 
-@dataclass
-class Entity:
-    start: int
-    end: int
-    url: Optional[str] = None
-    expanded_url: Optional[str] = None
-    display_url: Optional[str] = None
-    media_key: Optional[str] = None
-    probability: Optional[float] = None
-    type: Optional[str] = None
-    normalized_text: Optional[str] = None
-    status: Optional[int] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    unwound_url: Optional[str] = None
+from object.annotation import Annotation
 
 @dataclass
 class PublicMetrics:
@@ -24,6 +9,30 @@ class PublicMetrics:
     reply_count: int
     like_count: int
     quote_count: int
+
+@dataclass
+class NonPublicMetrics:
+    impression_count: int
+    url_link_clicks: int
+    user_profile_clicks: int
+
+@dataclass
+class OrganicMetrics:
+    impression_count: int
+    like_count: int
+    reply_count: int
+    retweet_count: int
+    url_link_clicks: int
+    user_profile_clicks: int
+
+@dataclass
+class PromotedMetrics:
+    impression_count: int
+    like_count: int
+    reply_count: int
+    retweet_count: int
+    url_link_clicks: int
+    user_profile_clicks: int
 
 @dataclass
 class Domain:
@@ -35,7 +44,7 @@ class Domain:
 class EntityAnnotation:
     id: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
 @dataclass
 class ContextAnnotation:
@@ -44,38 +53,175 @@ class ContextAnnotation:
 
 @dataclass
 class ReferencedTweet:
-    type: str
+    reference_type: str
     id: str
 
 @dataclass
+class EditControls:
+    edits_remaining: int
+    is_edit_eligible: bool
+    editable_until: datetime
+
+@dataclass
+class Withheld:
+    copyright: bool
+    country_codes: list[str]
+
+@dataclass
+class Cashtag:
+    start: int
+    end: int  # Exclusive
+    tag: str
+
+@dataclass
+class Hashtag:
+    start: int
+    end: int  # Exclusive
+    tag: str
+
+@dataclass
+class Mention:
+    start: int
+    end: int  # Exclusive
+    tag: str
+
+@dataclass
+class Url:
+    start: int
+    end: int  # Exclusive
+    url: str
+    expanded_url: str
+    display_url: str
+    status: str | None = None
+    title: str | None = None
+    description: str | None = None
+    unwound_url: str | None = None
+
+@dataclass
+class Entities:
+    # All fields are optional as tweets may not have all types of entities
+    annotations: list[Annotation] | None = None
+    cashtags: list[Cashtag] | None = None
+    hashtags: list[Hashtag] | None = None
+    mentions: list[Mention] | None = None
+    urls: list[Url] | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Entities':
+        # Convert annotations if present
+        annotations = None
+        if 'annotations' in data:
+            annotations = [
+                Annotation(
+                    start=ann['start'],
+                    end=ann['end'],
+                    probability=ann['probability'],
+                    type=ann['type'],
+                    normalized_text=ann['normalized_text']
+                )
+                for ann in data['annotations']
+            ]
+        
+        # Convert cashtags if present
+        cashtags = None
+        if 'cashtags' in data:
+            cashtags = [
+                Cashtag(
+                    start=tag['start'],
+                    end=tag['end'],
+                    tag=tag['tag']
+                )
+                for tag in data['cashtags']
+            ]
+        
+        # Convert hashtags if present
+        hashtags = None
+        if 'hashtags' in data:
+            hashtags = [
+                Hashtag(
+                    start=tag['start'],
+                    end=tag['end'],
+                    tag=tag['tag']
+                )
+                for tag in data['hashtags']
+            ]
+        
+        # Convert mentions if present
+        mentions = None
+        if 'mentions' in data:
+            mentions = [
+                Mention(
+                    start=mention['start'],
+                    end=mention['end'],
+                    tag=mention['tag']
+                )
+                for mention in data['mentions']
+            ]
+        
+        # Convert urls if present
+        urls = None
+        if 'urls' in data:
+            urls = [
+                Url(
+                    start=url['start'],
+                    end=url['end'],
+                    url=url['url'],
+                    expanded_url=url['expanded_url'],
+                    display_url=url['display_url'],
+                    status=url.get('status'),
+                    title=url.get('title'),
+                    description=url.get('description'),
+                    unwound_url=url.get('unwound_url')
+                )
+                for url in data['urls']
+            ]
+        
+        return cls(
+            annotations=annotations,
+            cashtags=cashtags,
+            hashtags=hashtags,
+            mentions=mentions,
+            urls=urls
+        )
+
+@dataclass
 class Tweet:
+    # Required fields
     id: str
     text: str
     author_id: str
     created_at: datetime
-    lang: str
-    edit_history_tweet_ids: List[str]
-    possibly_sensitive: bool
-    public_metrics: PublicMetrics
-    entities: Dict[str, List[Entity]]
-    context_annotations: Optional[List[ContextAnnotation]] = None
-    referenced_tweets: Optional[List[ReferencedTweet]] = None
-    in_reply_to_user_id: Optional[str] = None
-    attachments: Optional[Dict[str, List[str]]] = None
+    edit_history_tweet_ids: list[str]
+    
+    # Optional fields
+    lang: str | None = None
+    possibly_sensitive: bool | None = None
+    public_metrics: PublicMetrics | None = None
+    entities: Entities | None = None
+    context_annotations: list[ContextAnnotation] | None = None
+    referenced_tweets: list[ReferencedTweet] | None = None
+    in_reply_to_user_id: str | None = None
+    attachments: dict[str, list[str]] | None = None
+    conversation_id: str | None = None
+    edit_controls: EditControls | None = None
+    non_public_metrics: NonPublicMetrics | None = None
+    organic_metrics: OrganicMetrics | None = None
+    promoted_metrics: PromotedMetrics | None = None
+    reply_settings: str | None = None
+    withheld: Withheld | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Tweet':
-        # Convert string datetime to datetime object
+        # Convert datetime strings
         created_at = datetime.strptime(data['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
         
-        # Convert public metrics
+        # Convert metrics
         public_metrics = PublicMetrics(**data['public_metrics'])
         
-        # Convert entities
-        entities = {}
+        # Convert entities if present
+        entities = None
         if 'entities' in data:
-            for key, value in data['entities'].items():
-                entities[key] = [Entity(**entity) for entity in value]
+            entities = Entities.from_dict(data['entities'])
         
         # Convert context annotations
         context_annotations = None
@@ -89,7 +235,40 @@ class Tweet:
         # Convert referenced tweets
         referenced_tweets = None
         if 'referenced_tweets' in data:
-            referenced_tweets = [ReferencedTweet(**tweet) for tweet in data['referenced_tweets']]
+            referenced_tweets = []
+            for tweet in data['referenced_tweets']:
+                # Rename 'type' to 'reference_type' in referenced tweet data
+                tweet_data = tweet.copy()
+                tweet_data['reference_type'] = tweet_data.pop('type')
+                referenced_tweets.append(ReferencedTweet(**tweet_data))
+        
+        # Convert edit controls
+        edit_controls = None
+        if 'edit_controls' in data:
+            edit_data = data['edit_controls']
+            edit_data['editable_until'] = datetime.strptime(
+                edit_data['editable_until'], 
+                '%Y-%m-%dT%H:%M:%S.%fZ'
+            )
+            edit_controls = EditControls(**edit_data)
+        
+        # Convert metrics if present
+        non_public_metrics = None
+        if 'non_public_metrics' in data:
+            non_public_metrics = NonPublicMetrics(**data['non_public_metrics'])
+            
+        organic_metrics = None
+        if 'organic_metrics' in data:
+            organic_metrics = OrganicMetrics(**data['organic_metrics'])
+            
+        promoted_metrics = None
+        if 'promoted_metrics' in data:
+            promoted_metrics = PromotedMetrics(**data['promoted_metrics'])
+            
+        # Convert withheld
+        withheld = None
+        if 'withheld' in data:
+            withheld = Withheld(**data['withheld'])
         
         return cls(
             id=data['id'],
@@ -104,31 +283,12 @@ class Tweet:
             context_annotations=context_annotations,
             referenced_tweets=referenced_tweets,
             in_reply_to_user_id=data.get('in_reply_to_user_id'),
-            attachments=data.get('attachments')
+            attachments=data.get('attachments'),
+            conversation_id=data.get('conversation_id'),
+            edit_controls=edit_controls,
+            non_public_metrics=non_public_metrics,
+            organic_metrics=organic_metrics,
+            promoted_metrics=promoted_metrics,
+            reply_settings=data.get('reply_settings'),
+            withheld=withheld
         )
-
-    # @classmethod
-    # def from_api_response(cls, response: Dict[str, Any]) -> Dict[str, List['Tweet']]:
-    #     """
-    #     Creates Tweet objects from a full API response including main tweets and included tweets
-        
-    #     Returns:
-    #         Dict with 'data' and 'includes' keys containing lists of Tweet objects
-    #     """
-    #     result = {'data': [], 'includes': {'tweets': []}}
-        
-    #     # Process main tweets
-    #     if 'data' in response:
-    #         tweets_data = response['data']
-    #         if not isinstance(tweets_data, list):
-    #             tweets_data = [tweets_data]
-    #         result['data'] = [cls.from_dict(tweet_data) for tweet_data in tweets_data]
-        
-    #     # Process included tweets
-    #     if 'includes' in response and 'tweets' in response['includes']:
-    #         result['includes']['tweets'] = [
-    #             cls.from_dict(tweet_data) 
-    #             for tweet_data in response['includes']['tweets']
-    #         ]
-            
-    #     return result

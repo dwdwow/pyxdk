@@ -1,123 +1,99 @@
 import unittest
 from datetime import datetime
-from direct_msg_events import DirectMessageEvent, ReferencedTweet
-from user import User
-from tweet import Tweet
+from direct_msg_events import DirectMessageEvent, EventType, ReferencedTweet, Attachments
 
 class TestDirectMessageEvent(unittest.TestCase):
     def setUp(self):
-        self.sample_dm_data = {
-            "id": "1585047616894574596",
-            "sender_id": "944480690",
-            "text": "Hello, just you!",
-            "created_at": "2022-10-25T23:16:15.000Z",
-            "event_type": "MessageCreate",
-            "dm_conversation_id": "944480690-906948460078698496"
-        }
-
-        self.sample_dm_with_tweet = {
-            "id": "1581048670673260549",
-            "sender_id": "944480690",
-            "text": "Simple Tweet link: https://t.co/IYFbRIdXHg",
-            "referenced_tweets": [{
-                "id": "1578900353814519810"
-            }],
-            "created_at": "2022-10-14T22:25:52.000Z",
-            "event_type": "MessageCreate",
-            "dm_conversation_id": "944480690-906948460078698496"
-        }
-
-        self.sample_api_response = {
-            "data": [
-                self.sample_dm_data,
-                self.sample_dm_with_tweet
+        # Sample data for testing
+        self.message_data = {
+            'id': '1050118621198921728',
+            'event_type': 'MessageCreate',
+            'text': 'Hello, just you!',
+            'sender_id': '906948460078698496',
+            'dm_conversation_id': '1584988213961031680',
+            'created_at': '2019-06-04T23:12:08.000Z',
+            'referenced_tweets': [
+                {'id': '1578868150510456833'}
             ],
-            "includes": {
-                "users": [{
-                    "name": "API Demos",
-                    "description": "Hosting TwitterDev integrations...",
-                    "id": "944480690",
-                    "username": "FloodSocial"
-                }],
-                "tweets": [{
-                    "text": "Feeling kind of bad...",
-                    "id": "1578900353814519810",
-                    "created_at": "2022-10-09T00:09:13.000Z",
-                    "author_id": "944480690",
-                    "edit_history_tweet_ids": ["1578900353814519810"]
-                }]
-            },
-            "meta": {
-                "result_count": 2,
-                "next_token": "18LAA581J5II7LA00C00ZZZZ"
+            'attachments': {
+                'media_keys': ['3_1136048009270239232']
             }
         }
-
-    def test_dm_from_dict(self):
-        dm = DirectMessageEvent.from_dict(self.sample_dm_data)
         
-        # Test basic attributes
-        self.assertEqual(dm.id, "1585047616894574596")
-        self.assertEqual(dm.sender_id, "944480690")
-        self.assertEqual(dm.text, "Hello, just you!")
-        self.assertEqual(dm.event_type, "MessageCreate")
-        self.assertEqual(
-            dm.dm_conversation_id,
-            "944480690-906948460078698496"
-        )
+        self.event = DirectMessageEvent.from_dict(self.message_data)
+
+    def test_basic_attributes(self):
+        """Test basic DirectMessageEvent attributes"""
+        self.assertEqual(self.event.id, '1050118621198921728')
+        self.assertEqual(self.event.event_type, EventType.MESSAGE_CREATE)
+        self.assertEqual(self.event.text, 'Hello, just you!')
+        self.assertEqual(self.event.sender_id, '906948460078698496')
+        self.assertEqual(self.event.dm_conversation_id, '1584988213961031680')
         
         # Test datetime conversion
-        self.assertIsInstance(dm.created_at, datetime)
-        self.assertEqual(dm.created_at.year, 2022)
-        self.assertEqual(dm.created_at.month, 10)
-        self.assertEqual(dm.created_at.day, 25)
-        
-        # Test no referenced tweets
-        self.assertIsNone(dm.referenced_tweets)
+        expected_dt = datetime(2019, 6, 4, 23, 12, 8)
+        self.assertEqual(self.event.created_at, expected_dt)
 
-    def test_dm_with_referenced_tweet(self):
-        dm = DirectMessageEvent.from_dict(self.sample_dm_with_tweet)
-        
-        # Test referenced tweets
-        self.assertIsNotNone(dm.referenced_tweets)
-        self.assertEqual(len(dm.referenced_tweets), 1)
-        self.assertIsInstance(dm.referenced_tweets[0], ReferencedTweet)
-        self.assertEqual(dm.referenced_tweets[0].id, "1578900353814519810")
+    def test_referenced_tweets(self):
+        """Test referenced tweets handling"""
+        self.assertIsInstance(self.event.referenced_tweets, list)
+        self.assertEqual(len(self.event.referenced_tweets), 1)
+        self.assertIsInstance(self.event.referenced_tweets[0], ReferencedTweet)
+        self.assertEqual(self.event.referenced_tweets[0].id, '1578868150510456833')
 
-    # def test_dm_from_api_response(self):
-    #     result = DirectMessageEvent.from_api_response(self.sample_api_response)
+    def test_attachments(self):
+        """Test attachments handling"""
+        self.assertIsInstance(self.event.attachments, Attachments)
+        self.assertEqual(len(self.event.attachments.media_keys), 1)
+        self.assertEqual(self.event.attachments.media_keys[0], '3_1136048009270239232')
+
+    def test_event_types(self):
+        """Test different event types"""
+        # Test ParticipantsJoin
+        join_data = {
+            **self.message_data,
+            'event_type': 'ParticipantsJoin',
+            'text': None,
+            'participant_ids': ['906948460078698496']
+        }
+        join_event = DirectMessageEvent.from_dict(join_data)
+        self.assertEqual(join_event.event_type, EventType.PARTICIPANTS_JOIN)
+        self.assertEqual(join_event.participant_ids, ['906948460078698496'])
         
-    #     # Test structure
-    #     self.assertIn('data', result)
-    #     self.assertIn('includes', result)
-    #     self.assertIn('meta', result)
-    #     self.assertIn('users', result['includes'])
-    #     self.assertIn('tweets', result['includes'])
+        # Test ParticipantsLeave
+        leave_data = {
+            **self.message_data,
+            'event_type': 'ParticipantsLeave',
+            'text': None,
+            'participant_ids': ['906948460078698496']
+        }
+        leave_event = DirectMessageEvent.from_dict(leave_data)
+        self.assertEqual(leave_event.event_type, EventType.PARTICIPANTS_LEAVE)
+        self.assertEqual(leave_event.participant_ids, ['906948460078698496'])
+
+    def test_minimal_event(self):
+        """Test event creation with minimal required data"""
+        minimal_data = {
+            'id': '1050118621198921728',
+            'event_type': 'MessageCreate',
+            'sender_id': '906948460078698496',
+            'dm_conversation_id': '1584988213961031680',
+            'created_at': '2019-06-04T23:12:08.000Z'
+        }
         
-    #     # Test DM events
-    #     self.assertEqual(len(result['data']), 2)
-    #     dm = result['data'][0]
-    #     self.assertIsInstance(dm, DirectMessageEvent)
-    #     self.assertEqual(dm.id, "1585047616894574596")
+        minimal_event = DirectMessageEvent.from_dict(minimal_data)
         
-    #     # Test included users
-    #     self.assertEqual(len(result['includes']['users']), 1)
-    #     user = result['includes']['users'][0]
-    #     self.assertIsInstance(user, User)
-    #     self.assertEqual(user.id, "944480690")
+        # Test required fields
+        self.assertEqual(minimal_event.id, '1050118621198921728')
+        self.assertEqual(minimal_event.event_type, EventType.MESSAGE_CREATE)
+        self.assertEqual(minimal_event.sender_id, '906948460078698496')
+        self.assertEqual(minimal_event.dm_conversation_id, '1584988213961031680')
         
-    #     # Test included tweets
-    #     self.assertEqual(len(result['includes']['tweets']), 1)
-    #     tweet = result['includes']['tweets'][0]
-    #     self.assertIsInstance(tweet, Tweet)
-    #     self.assertEqual(tweet.id, "1578900353814519810")
-        
-    #     # Test meta data
-    #     self.assertEqual(result['meta']['result_count'], 2)
-    #     self.assertEqual(
-    #         result['meta']['next_token'],
-    #         "18LAA581J5II7LA00C00ZZZZ"
-    #     )
+        # Test that optional fields are None
+        self.assertIsNone(minimal_event.text)
+        self.assertIsNone(minimal_event.participant_ids)
+        self.assertIsNone(minimal_event.referenced_tweets)
+        self.assertIsNone(minimal_event.attachments)
 
 if __name__ == '__main__':
     unittest.main() 

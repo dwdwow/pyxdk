@@ -1,61 +1,74 @@
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from enum import Enum
+
+class PlaceType(Enum):
+    CITY = "city"
+    COUNTRY = "country"
+    ADMIN = "admin"
+    POI = "poi"  # Point of Interest
+    NEIGHBORHOOD = "neighborhood"
 
 @dataclass
-class GeoProperties:
-    pass  # Twitter API returns empty properties object for places
+class GeoBox:
+    min_longitude: float
+    min_latitude: float
+    max_longitude: float
+    max_latitude: float
+
+    @classmethod
+    def from_bbox(cls, bbox: list[float]) -> 'GeoBox':
+        return cls(
+            min_longitude=bbox[0],
+            min_latitude=bbox[1],
+            max_longitude=bbox[2],
+            max_latitude=bbox[3]
+        )
 
 @dataclass
-class Geo:
+class GeoJSON:
     type: str
-    bbox: List[float]
-    properties: GeoProperties
+    bbox: GeoBox
+    properties: dict
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'GeoJSON':
+        return cls(
+            type=data['type'],
+            bbox=GeoBox.from_bbox(data['bbox']),
+            properties=data.get('properties', {})
+        )
 
 @dataclass
 class Place:
+    # Required fields
     id: str
-    name: str
-    country_code: str
-    country: str
-    place_type: str
     full_name: str
-    geo: Geo
+    name: str
+    place_type: PlaceType
+    country: str
+    country_code: str
+    
+    # Optional fields
+    contained_within: list[str] | None = None
+    geo: GeoJSON | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Place':
-        # Convert geo data
-        geo_data = data['geo']
-        geo = Geo(
-            type=geo_data['type'],
-            bbox=geo_data['bbox'],
-            properties=GeoProperties()
-        )
+        # Convert place_type string to enum
+        place_type = PlaceType(data['place_type'])
+        
+        # Convert geo data if present
+        geo = None
+        if 'geo' in data and data['geo']:
+            geo = GeoJSON.from_dict(data['geo'])
         
         return cls(
             id=data['id'],
-            name=data['name'],
-            country_code=data['country_code'],
-            country=data['country'],
-            place_type=data['place_type'],
             full_name=data['full_name'],
+            name=data['name'],
+            place_type=place_type,
+            country=data['country'],
+            country_code=data['country_code'],
+            contained_within=data.get('contained_within'),
             geo=geo
         )
-
-    # @classmethod
-    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
-    #     """
-    #     Creates Place objects from a full API response
-        
-    #     Returns:
-    #         Dict with 'data' and 'includes' keys containing lists of objects
-    #     """
-    #     result = {'data': [], 'includes': {'places': []}}
-        
-    #     # Process places in includes
-    #     if 'includes' in response and 'places' in response['includes']:
-    #         result['includes']['places'] = [
-    #             cls.from_dict(place_data) 
-    #             for place_data in response['includes']['places']
-    #         ]
-            
-        return result

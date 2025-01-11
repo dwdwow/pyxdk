@@ -4,15 +4,25 @@ from typing import List
 
 class Field(Enum):
     # Post fields
-    POST = "tweet.fields"
+    TWEET = "tweet.fields"
     # User fields
     USER = "user.fields"
+    # Trend fields
+    TREND = "trend.fields"
+    # Space fields
+    SPACE = "space.fields"
+    # Direct message event fields
+    DM_EVENT = "dm_event.fields"
     # Media fields
     MEDIA = "media.fields"
     # Poll fields
     POLL = "poll.fields"
     # Place fields
     PLACE = "place.fields"
+    # Community fields
+    COMMUNITY = "community.fields"
+    # List fields
+    LIST = "list.fields"
 
 
 class TweetField(Enum):
@@ -173,3 +183,36 @@ class PlaceField(Enum):
             cls.NAME.value,
             cls.PLACE_TYPE.value
         ]
+
+
+class CommunityField(Enum):
+    # default
+    ID = "id"
+    NAME = "name"
+    DESCRIPTION = "description"
+    JOIN_POLICY = "join_policy"
+    ACCESS = "access"
+    MEMBER_COUNT = "member_count"
+    CREATED_AT = "created_at"
+
+    @classmethod
+    def optional_fields(cls) -> List[str]:
+        return [
+            cls.ID.value,
+            cls.NAME.value,
+            cls.DESCRIPTION.value,
+            cls.JOIN_POLICY.value,
+            cls.ACCESS.value,
+            cls.MEMBER_COUNT.value,
+            cls.CREATED_AT.value
+        ]
+
+
+class ListField(Enum):
+    # default
+    CREATED_AT = "created_at"
+    FOLLOWER_COUNT = "follower_count"
+    MEMBER_COUNT = "member_count"
+    PRIVATE = "private"
+    DESCRIPTION = "description"
+    OWNER_ID = "owner_id"

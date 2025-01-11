@@ -63,7 +63,41 @@ class Client:
                         queries.append(f"{k}={value}")
         url += "?" + "&".join(queries)
         response = requests.get(url, headers=self.__headers__())
-        return response.json()
+        status_code = response.status_code
+        if status_code == 200:
+            return response.json()
+        elif status_code == 304:
+            # Not Modified
+            # There was no new data to return.
+            return None  # No new data
+        elif status_code == 400:
+            raise ValueError(f"{status_code} - Bad Request - Invalid parameters")
+        elif status_code == 401:
+            raise ValueError(f"{status_code} - Unauthorized - Authentication failed") 
+        elif status_code == 403:
+            raise ValueError(f"{status_code} - Forbidden - Access not allowed")
+        elif status_code == 404:
+            raise ValueError(f"{status_code} - Not Found - Invalid URI or resource does not exist")
+        elif status_code == 406:
+            raise ValueError(f"{status_code} - Not Acceptable - Invalid format specified")
+        elif status_code == 409:
+            raise ValueError(f"{status_code} - Connection Exception - No rules defined for filtered stream")
+        elif status_code == 410:
+            raise ValueError(f"{status_code} - Gone - API endpoint has been turned off")
+        elif status_code == 422:
+            raise ValueError(f"{status_code} - Unprocessable Entity - Invalid data format")
+        elif status_code == 429:
+            raise ValueError(f"{status_code} - Too Many Requests - Rate limit exceeded")
+        elif status_code == 500:
+            raise ValueError(f"{status_code} - Internal Server Error")
+        elif status_code == 502:
+            raise ValueError(f"{status_code} - Bad Gateway - Twitter is down or being upgraded")
+        elif status_code == 503:
+            raise ValueError(f"{status_code} - Service Unavailable - Server overloaded")
+        elif status_code == 504:
+            raise ValueError(f"{status_code} - Gateway Timeout - Request timed out")
+        else:
+            raise ValueError(f"{status_code} - Unknown error occurred")
     
     def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData[Tweet]:
         return ResponseData.from_dict(self.__get__("tweets", ids, fields, expansions))
