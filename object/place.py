@@ -41,21 +41,21 @@ class Place:
             geo=geo
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates Place objects from a full API response
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates Place objects from a full API response
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing lists of objects
-        """
-        result = {'data': [], 'includes': {'places': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing lists of objects
+    #     """
+    #     result = {'data': [], 'includes': {'places': []}}
         
-        # Process places in includes
-        if 'includes' in response and 'places' in response['includes']:
-            result['includes']['places'] = [
-                cls.from_dict(place_data) 
-                for place_data in response['includes']['places']
-            ]
+    #     # Process places in includes
+    #     if 'includes' in response and 'places' in response['includes']:
+    #         result['includes']['places'] = [
+    #             cls.from_dict(place_data) 
+    #             for place_data in response['includes']['places']
+    #         ]
             
         return result

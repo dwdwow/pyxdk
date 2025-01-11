@@ -30,26 +30,26 @@ class List:
             description=data.get('description')
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, TypeList]:
-        """
-        Creates List objects from a full API response including lists and included users
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, TypeList]:
+    #     """
+    #     Creates List objects from a full API response including lists and included users
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing List and User objects
-        """
-        result = {'data': None, 'includes': {'users': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing List and User objects
+    #     """
+    #     result = {'data': None, 'includes': {'users': []}}
         
-        # Process list data
-        if 'data' in response:
-            list_data = response['data']
-            result['data'] = cls.from_dict(list_data)
+    #     # Process list data
+    #     if 'data' in response:
+    #         list_data = response['data']
+    #         result['data'] = cls.from_dict(list_data)
         
-        # Process included users
-        if 'includes' in response and 'users' in response['includes']:
-            result['includes']['users'] = [
-                User.from_dict(user_data) 
-                for user_data in response['includes']['users']
-            ]
+    #     # Process included users
+    #     if 'includes' in response and 'users' in response['includes']:
+    #         result['includes']['users'] = [
+    #             User.from_dict(user_data) 
+    #             for user_data in response['includes']['users']
+    #         ]
             
         return result

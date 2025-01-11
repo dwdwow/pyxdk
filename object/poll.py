@@ -35,21 +35,21 @@ class Poll:
             end_datetime=end_datetime
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates Poll objects from a full API response
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates Poll objects from a full API response
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing lists of objects
-        """
-        result = {'data': [], 'includes': {'polls': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing lists of objects
+    #     """
+    #     result = {'data': [], 'includes': {'polls': []}}
         
-        # Process polls in includes
-        if 'includes' in response and 'polls' in response['includes']:
-            result['includes']['polls'] = [
-                cls.from_dict(poll_data) 
-                for poll_data in response['includes']['polls']
-            ]
+    #     # Process polls in includes
+    #     if 'includes' in response and 'polls' in response['includes']:
+    #         result['includes']['polls'] = [
+    #             cls.from_dict(poll_data) 
+    #             for poll_data in response['includes']['polls']
+    #         ]
             
         return result

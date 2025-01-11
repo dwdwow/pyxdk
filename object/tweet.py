@@ -107,28 +107,28 @@ class Tweet:
             attachments=data.get('attachments')
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict[str, Any]) -> Dict[str, List['Tweet']]:
-        """
-        Creates Tweet objects from a full API response including main tweets and included tweets
+    # @classmethod
+    # def from_api_response(cls, response: Dict[str, Any]) -> Dict[str, List['Tweet']]:
+    #     """
+    #     Creates Tweet objects from a full API response including main tweets and included tweets
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing lists of Tweet objects
-        """
-        result = {'data': [], 'includes': {'tweets': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing lists of Tweet objects
+    #     """
+    #     result = {'data': [], 'includes': {'tweets': []}}
         
-        # Process main tweets
-        if 'data' in response:
-            tweets_data = response['data']
-            if not isinstance(tweets_data, list):
-                tweets_data = [tweets_data]
-            result['data'] = [cls.from_dict(tweet_data) for tweet_data in tweets_data]
+    #     # Process main tweets
+    #     if 'data' in response:
+    #         tweets_data = response['data']
+    #         if not isinstance(tweets_data, list):
+    #             tweets_data = [tweets_data]
+    #         result['data'] = [cls.from_dict(tweet_data) for tweet_data in tweets_data]
         
-        # Process included tweets
-        if 'includes' in response and 'tweets' in response['includes']:
-            result['includes']['tweets'] = [
-                cls.from_dict(tweet_data) 
-                for tweet_data in response['includes']['tweets']
-            ]
+    #     # Process included tweets
+    #     if 'includes' in response and 'tweets' in response['includes']:
+    #         result['includes']['tweets'] = [
+    #             cls.from_dict(tweet_data) 
+    #             for tweet_data in response['includes']['tweets']
+    #         ]
             
-        return result
+    #     return result

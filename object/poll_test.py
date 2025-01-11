@@ -66,19 +66,19 @@ class TestPoll(unittest.TestCase):
         self.assertEqual(second_option.label, "C Hashtag")
         self.assertEqual(second_option.votes, 156)
 
-    def test_poll_from_api_response(self):
-        result = Poll.from_api_response(self.sample_api_response)
+    # def test_poll_from_api_response(self):
+    #     result = Poll.from_api_response(self.sample_api_response)
         
-        # Test structure
-        self.assertIn('includes', result)
-        self.assertIn('polls', result['includes'])
+    #     # Test structure
+    #     self.assertIn('includes', result)
+    #     self.assertIn('polls', result['includes'])
         
-        # Test polls
-        self.assertEqual(len(result['includes']['polls']), 1)
-        poll = result['includes']['polls'][0]
-        self.assertIsInstance(poll, Poll)
-        self.assertEqual(poll.id, "1199786642468413448")
-        self.assertEqual(len(poll.options), 2)
+    #     # Test polls
+    #     self.assertEqual(len(result['includes']['polls']), 1)
+    #     poll = result['includes']['polls'][0]
+    #     self.assertIsInstance(poll, Poll)
+    #     self.assertEqual(poll.id, "1199786642468413448")
+    #     self.assertEqual(len(poll.options), 2)
 
 if __name__ == '__main__':
     unittest.main() 

@@ -50,26 +50,26 @@ class Space:
             started_at=started_at
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates Space objects from a full API response including spaces and included users
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates Space objects from a full API response including spaces and included users
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing Space and User objects
-        """
-        result = {'data': None, 'includes': {'users': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing Space and User objects
+    #     """
+    #     result = {'data': None, 'includes': {'users': []}}
         
-        # Process space data
-        if 'data' in response:
-            space_data = response['data']
-            result['data'] = cls.from_dict(space_data)
+    #     # Process space data
+    #     if 'data' in response:
+    #         space_data = response['data']
+    #         result['data'] = cls.from_dict(space_data)
         
-        # Process included users
-        if 'includes' in response and 'users' in response['includes']:
-            result['includes']['users'] = [
-                User.from_dict(user_data) 
-                for user_data in response['includes']['users']
-            ]
+    #     # Process included users
+    #     if 'includes' in response and 'users' in response['includes']:
+    #         result['includes']['users'] = [
+    #             User.from_dict(user_data) 
+    #             for user_data in response['includes']['users']
+    #         ]
             
         return result

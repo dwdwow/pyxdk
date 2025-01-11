@@ -54,19 +54,19 @@ class TestPlace(unittest.TestCase):
         self.assertEqual(place.geo.bbox[1], 40.683935)
         self.assertIsInstance(place.geo.properties, GeoProperties)
 
-    def test_place_from_api_response(self):
-        result = Place.from_api_response(self.sample_api_response)
+    # def test_place_from_api_response(self):
+    #     result = Place.from_api_response(self.sample_api_response)
         
-        # Test structure
-        self.assertIn('includes', result)
-        self.assertIn('places', result['includes'])
+    #     # Test structure
+    #     self.assertIn('includes', result)
+    #     self.assertIn('places', result['includes'])
         
-        # Test places
-        self.assertEqual(len(result['includes']['places']), 1)
-        place = result['includes']['places'][0]
-        self.assertIsInstance(place, Place)
-        self.assertEqual(place.id, "01a9a39529b27f36")
-        self.assertEqual(place.name, "Manhattan")
+    #     # Test places
+    #     self.assertEqual(len(result['includes']['places']), 1)
+    #     place = result['includes']['places'][0]
+    #     self.assertIsInstance(place, Place)
+    #     self.assertEqual(place.id, "01a9a39529b27f36")
+    #     self.assertEqual(place.name, "Manhattan")
 
 if __name__ == '__main__':
     unittest.main() 

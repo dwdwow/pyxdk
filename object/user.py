@@ -78,28 +78,28 @@ class User:
             pinned_tweet_id=data.get('pinned_tweet_id')
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates User objects from a full API response including users and included tweets
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates User objects from a full API response including users and included tweets
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing lists of User and Tweet objects
-        """
-        result = {'data': [], 'includes': {'tweets': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing lists of User and Tweet objects
+    #     """
+    #     result = {'data': [], 'includes': {'tweets': []}}
         
-        # Process users
-        if 'data' in response:
-            users_data = response['data']
-            if not isinstance(users_data, list):
-                users_data = [users_data]
-            result['data'] = [cls.from_dict(user_data) for user_data in users_data]
+    #     # Process users
+    #     if 'data' in response:
+    #         users_data = response['data']
+    #         if not isinstance(users_data, list):
+    #             users_data = [users_data]
+    #         result['data'] = [cls.from_dict(user_data) for user_data in users_data]
         
-        # Process included tweets
-        if 'includes' in response and 'tweets' in response['includes']:
-            result['includes']['tweets'] = [
-                Tweet.from_dict(tweet_data) 
-                for tweet_data in response['includes']['tweets']
-            ]
+    #     # Process included tweets
+    #     if 'includes' in response and 'tweets' in response['includes']:
+    #         result['includes']['tweets'] = [
+    #             Tweet.from_dict(tweet_data) 
+    #             for tweet_data in response['includes']['tweets']
+    #         ]
             
         return result

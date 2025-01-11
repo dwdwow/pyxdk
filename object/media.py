@@ -32,21 +32,21 @@ class Media:
             public_metrics=public_metrics
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates Media objects from a full API response
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates Media objects from a full API response
         
-        Returns:
-            Dict with 'data' and 'includes' keys containing lists of objects
-        """
-        result = {'data': [], 'includes': {'media': []}}
+    #     Returns:
+    #         Dict with 'data' and 'includes' keys containing lists of objects
+    #     """
+    #     result = {'data': [], 'includes': {'media': []}}
         
-        # Process media in includes
-        if 'includes' in response and 'media' in response['includes']:
-            result['includes']['media'] = [
-                cls.from_dict(media_data) 
-                for media_data in response['includes']['media']
-            ]
+    #     # Process media in includes
+    #     if 'includes' in response and 'media' in response['includes']:
+    #         result['includes']['media'] = [
+    #             cls.from_dict(media_data) 
+    #             for media_data in response['includes']['media']
+    #         ]
             
         return result

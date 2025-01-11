@@ -85,25 +85,25 @@ class TestUser(unittest.TestCase):
         self.assertIsInstance(user.entities.description['hashtags'][0], HashtagEntity)
         self.assertEqual(user.entities.description['hashtags'][0].tag, "DevRel")
 
-    def test_user_from_api_response(self):
-        result = User.from_api_response(self.sample_api_response)
+    # def test_user_from_api_response(self):
+    #     result = User.from_api_response(self.sample_api_response)
         
-        # Test structure
-        self.assertIn('data', result)
-        self.assertIn('includes', result)
-        self.assertIn('tweets', result['includes'])
+    #     # Test structure
+    #     self.assertIn('data', result)
+    #     self.assertIn('includes', result)
+    #     self.assertIn('tweets', result['includes'])
         
-        # Test users
-        self.assertEqual(len(result['data']), 1)
-        user = result['data'][0]
-        self.assertIsInstance(user, User)
-        self.assertEqual(user.id, "2244994945")
+    #     # Test users
+    #     self.assertEqual(len(result['data']), 1)
+    #     user = result['data'][0]
+    #     self.assertIsInstance(user, User)
+    #     self.assertEqual(user.id, "2244994945")
         
-        # Test included tweets
-        self.assertEqual(len(result['includes']['tweets']), 1)
-        tweet = result['includes']['tweets'][0]
-        self.assertIsInstance(tweet, Tweet)
-        self.assertEqual(tweet.id, "1255542774432063488")
+    #     # Test included tweets
+    #     self.assertEqual(len(result['includes']['tweets']), 1)
+    #     tweet = result['includes']['tweets'][0]
+    #     self.assertIsInstance(tweet, Tweet)
+    #     self.assertEqual(tweet.id, "1255542774432063488")
 
 if __name__ == '__main__':
     unittest.main() 

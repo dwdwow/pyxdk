@@ -41,42 +41,42 @@ class DirectMessageEvent:
             referenced_tweets=referenced_tweets
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates DirectMessageEvent objects from a full API response including DM events and included data
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates DirectMessageEvent objects from a full API response including DM events and included data
         
-        Returns:
-            Dict with 'data', 'includes', and 'meta' keys containing lists of objects
-        """
-        result = {
-            'data': [],
-            'includes': {
-                'users': [],
-                'tweets': []
-            },
-            'meta': response.get('meta', {})
-        }
+    #     Returns:
+    #         Dict with 'data', 'includes', and 'meta' keys containing lists of objects
+    #     """
+    #     result = {
+    #         'data': [],
+    #         'includes': {
+    #             'users': [],
+    #             'tweets': []
+    #         },
+    #         'meta': response.get('meta', {})
+    #     }
         
-        # Process DM events
-        if 'data' in response:
-            result['data'] = [
-                cls.from_dict(event_data) 
-                for event_data in response['data']
-            ]
+    #     # Process DM events
+    #     if 'data' in response:
+    #         result['data'] = [
+    #             cls.from_dict(event_data) 
+    #             for event_data in response['data']
+    #         ]
         
-        # Process included users
-        if 'includes' in response and 'users' in response['includes']:
-            result['includes']['users'] = [
-                User.from_dict(user_data) 
-                for user_data in response['includes']['users']
-            ]
+    #     # Process included users
+    #     if 'includes' in response and 'users' in response['includes']:
+    #         result['includes']['users'] = [
+    #             User.from_dict(user_data) 
+    #             for user_data in response['includes']['users']
+    #         ]
             
-        # Process included tweets
-        if 'includes' in response and 'tweets' in response['includes']:
-            result['includes']['tweets'] = [
-                Tweet.from_dict(tweet_data) 
-                for tweet_data in response['includes']['tweets']
-            ]
+    #     # Process included tweets
+    #     if 'includes' in response and 'tweets' in response['includes']:
+    #         result['includes']['tweets'] = [
+    #             Tweet.from_dict(tweet_data) 
+    #             for tweet_data in response['includes']['tweets']
+    #         ]
             
         return result 

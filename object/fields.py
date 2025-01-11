@@ -1,4 +1,18 @@
 from enum import Enum
+from typing import List
+
+
+class Field(Enum):
+    # Post fields
+    POST = "tweet.fields"
+    # User fields
+    USER = "user.fields"
+    # Media fields
+    MEDIA = "media.fields"
+    # Poll fields
+    POLL = "poll.fields"
+    # Place fields
+    PLACE = "place.fields"
 
 
 class TweetField(Enum):
@@ -24,18 +38,10 @@ class TweetField(Enum):
     REFERENCED_TWEETS = "referenced_tweets"
     REPLY_SETTINGS = "reply_settings"
     WITHHELD = "withheld"
-
-    @classmethod
-    def default_fields(cls) -> str:
-        return ",".join([
-            cls.ID.value,
-            cls.TEXT.value,
-            cls.EDIT_HISTORY_TWEET_IDS.value
-        ])
         
     @classmethod
-    def optional_fields(cls) -> str:
-        return ",".join([
+    def optional_fields(cls) -> List[str]:
+        return [
             cls.ATTACHMENTS.value,
             cls.AUTHOR_ID.value,
             cls.CONTEXT_ANNOTATIONS.value,
@@ -53,7 +59,7 @@ class TweetField(Enum):
             cls.REFERENCED_TWEETS.value,
             cls.REPLY_SETTINGS.value,
             cls.WITHHELD.value
-        ])
+        ]
         
 
 class UserField(Enum):
@@ -76,16 +82,8 @@ class UserField(Enum):
     WITHHELD = "withheld"
 
     @classmethod
-    def default_fields(cls) -> str:
-        return ",".join([
-            cls.ID.value,
-            cls.NAME.value,
-            cls.USERNAME.value
-        ])
-
-    @classmethod
-    def optional_fields(cls) -> str:
-        return ",".join([
+    def optional_fields(cls) -> List[str]:
+        return [
             cls.CONNECTION_STATUS.value,
             cls.CREATED_AT.value,
             cls.DESCRIPTION.value,
@@ -98,7 +96,7 @@ class UserField(Enum):
             cls.URL.value,
             cls.VERIFIED.value,
             cls.WITHHELD.value
-        ])
+        ]
         
 
 class MediaField(Enum):
@@ -118,16 +116,9 @@ class MediaField(Enum):
     ALT_TEXT = "alt_text"
     VARIANTS = "variants"
 
-    @classmethod
-    def default_fields(cls) -> str:
-        return ",".join([
-            cls.MEDIA_KEY.value,
-            cls.TYPE.value
-        ])
-
     @classmethod 
-    def optional_fields(cls) -> str:
-        return ",".join([
+    def optional_fields(cls) -> List[str]:
+        return [
             cls.URL.value,
             cls.DURATION_MS.value,
             cls.HEIGHT.value,
@@ -139,7 +130,7 @@ class MediaField(Enum):
             cls.WIDTH.value,
             cls.ALT_TEXT.value,
             cls.VARIANTS.value
-        ])
+        ]
 
 
 class PollField(Enum):
@@ -152,19 +143,12 @@ class PollField(Enum):
     VOTING_STATUS = "voting_status"
 
     @classmethod
-    def default_fields(cls) -> str:
-        return ",".join([
-            cls.ID.value,
-            cls.OPTIONS.value
-        ])
-
-    @classmethod
-    def optional_fields(cls) -> str:
-        return ",".join([
+    def optional_fields(cls) -> List[str]:
+        return [
             cls.DURATION_MINUTES.value,
             cls.END_DATETIME.value,
             cls.VOTING_STATUS.value
-        ])
+        ]
 
 
 class PlaceField(Enum):
@@ -180,19 +164,12 @@ class PlaceField(Enum):
     PLACE_TYPE = "place_type"
 
     @classmethod
-    def default_fields(cls) -> str:
-        return ",".join([
-            cls.FULL_NAME.value,
-            cls.ID.value
-        ])
-
-    @classmethod
-    def optional_fields(cls) -> str:
-        return ",".join([
+    def optional_fields(cls) -> List[str]:
+        return [
             cls.CONTAINED_WITHIN.value,
             cls.COUNTRY.value,
             cls.COUNTRY_CODE.value,
             cls.GEO.value,
             cls.NAME.value,
             cls.PLACE_TYPE.value
-        ])
+        ]

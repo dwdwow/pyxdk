@@ -27,24 +27,24 @@ class Community:
             created_at=created_at
         )
 
-    @classmethod
-    def from_api_response(cls, response: Dict) -> Dict[str, List]:
-        """
-        Creates Community objects from a full API response
+    # @classmethod
+    # def from_api_response(cls, response: Dict) -> Dict[str, List]:
+    #     """
+    #     Creates Community objects from a full API response
         
-        Returns:
-            Dict with 'data' and 'meta' keys containing lists of objects
-        """
-        result = {
-            'data': [],
-            'meta': response.get('meta', {})
-        }
+    #     Returns:
+    #         Dict with 'data' and 'meta' keys containing lists of objects
+    #     """
+    #     result = {
+    #         'data': [],
+    #         'meta': response.get('meta', {})
+    #     }
         
-        # Process communities
-        if 'data' in response:
-            result['data'] = [
-                cls.from_dict(community_data) 
-                for community_data in response['data']
-            ]
+    #     # Process communities
+    #     if 'data' in response:
+    #         result['data'] = [
+    #             cls.from_dict(community_data) 
+    #             for community_data in response['data']
+    #         ]
             
-        return result
+    #     return result
