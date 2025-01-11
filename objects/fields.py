@@ -11,6 +11,8 @@ class Field(Enum):
     TREND = "trend.fields"
     # Space fields
     SPACE = "space.fields"
+    # Topic fields
+    TOPIC = "topic.fields"
     # Direct message event fields
     DM_EVENT = "dm_event.fields"
     # Media fields
@@ -108,7 +110,93 @@ class UserField(Enum):
             cls.WITHHELD.value
         ]
         
+        
+class TrendField(Enum):
+    pass
 
+
+class SpaceField(Enum):
+    ID = "id"
+    STATE = "state"
+    HOST_IDS = "host_ids"
+    CREATED_AT = "created_at"
+    CREATOR_ID = "creator_id"
+    LANG = "lang"
+    INVITED_USER_IDS = "invited_user_ids"
+    PARTICIPANT_COUNT = "participant_count"
+    SPEAKER_IDS = "speaker_ids"
+    STARTED_AT = "started_at"
+    ENDED_AT = "ended_at"
+    SUBSCRIBER_COUNT = "subscriber_count"
+    TOPIC_IDS = "topic_ids"
+    TITLE = "title"
+    UPDATED_AT = "updated_at"
+    SCHEDULED_START = "scheduled_start"
+    IS_TICKETED = "is_ticketed"
+
+    @classmethod
+    def optional_fields(cls) -> List[str]:
+        return [
+            cls.ID.value,
+            cls.STATE.value,
+            cls.HOST_IDS.value,
+            cls.CREATED_AT.value,
+            cls.CREATOR_ID.value,
+            cls.LANG.value,
+            cls.INVITED_USER_IDS.value,
+            cls.PARTICIPANT_COUNT.value,
+            cls.SPEAKER_IDS.value,
+            cls.STARTED_AT.value,
+            cls.ENDED_AT.value,
+            cls.SUBSCRIBER_COUNT.value,
+            cls.TOPIC_IDS.value,
+            cls.TITLE.value,
+            cls.UPDATED_AT.value,
+            cls.SCHEDULED_START.value,
+            cls.IS_TICKETED.value
+        ]
+        
+
+class TopicField(Enum):
+    ID = "id"
+    NAME = "name"
+    DESCRIPTION = "description"
+
+    @classmethod
+    def optional_fields(cls) -> List[str]:
+        return [
+            cls.ID.value,
+            cls.NAME.value,
+            cls.DESCRIPTION.value
+        ]
+
+
+class DirectMessageEventField(Enum):
+    ID = "id"
+    TEXT = "text"
+    EVENT_TYPE = "event_type"
+    CREATED_AT = "created_at"
+    DM_CONVERSATION_ID = "dm_conversation_id"
+    SENDER_ID = "sender_id"
+    PARTICIPANT_IDS = "participant_ids"
+    REFERENCED_TWEETS = "referenced_tweets"
+    ATTACHMENTS = "attachments"
+
+    @classmethod
+    def optional_fields(cls) -> List[str]:
+        return [
+            cls.ID.value,
+            cls.TEXT.value, 
+            cls.EVENT_TYPE.value,
+            cls.CREATED_AT.value,
+            cls.DM_CONVERSATION_ID.value,
+            cls.SENDER_ID.value,
+            cls.PARTICIPANT_IDS.value,
+            cls.REFERENCED_TWEETS.value,
+            cls.ATTACHMENTS.value
+        ]
+
+        
 class MediaField(Enum):
     # default
     MEDIA_KEY = "media_key"
