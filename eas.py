@@ -142,4 +142,4 @@ def decrypt_file_from_input_hex_key() -> str:
 
 
 if __name__ == "__main__":
-    pass
+    encrypt_from_input()

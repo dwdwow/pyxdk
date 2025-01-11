@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 from typing import TypeVar, TypedDict
-from community import Community
-from direct_msg_events import DirectMessageEvent
-from errors import Errors
-from xlist import List
-from media import Media
-from meta import Meta
-from place import Place
-from poll import Poll
-from space import Space
-from tweet import Tweet
-from user import User
+from objects.community import Community
+from objects.direct_msg_events import DirectMessageEvent
+from objects.errors import Errors
+from objects.xlist import List
+from objects.media import Media
+from objects.meta import Meta
+from objects.place import Place
+from objects.poll import Poll
+from objects.space import Space
+from objects.tweet import Tweet
+from objects.user import User
 
 
 DataItem = TypeVar('DataItem', Tweet, User, Space, List, Media, Poll, Place, Community, DirectMessageEvent)
@@ -28,11 +28,23 @@ class Includes:
     places: list[Place] | None
     communities: list[Community] | None
     direct_message_events: list[DirectMessageEvent] | None
-    meta: Meta | None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Includes':
-        return cls(**data)
+        if not data:
+            return None
+        return cls(
+            tweets=data.get('tweets', None),
+            users=data.get('users', None),
+            spaces=data.get('spaces', None),
+            lists=data.get('lists', None),
+            media=data.get('media', None),
+            polls=data.get('polls', None),
+            places=data.get('places', None),
+            communities=data.get('communities', None),
+            direct_message_events=data.get('direct_message_events', None),
+            meta=data.get('meta', None)
+        )
     
     
 RawData = TypedDict('RawData', {
@@ -53,8 +65,8 @@ class ResponseData:
     @classmethod
     def from_dict(cls, data: RawData) -> 'ResponseData':
         return cls(
-            data=data.get('data', None),
-            includes=Includes.from_dict(data.get('includes', {})),
-            meta=Meta.from_dict(data.get('meta', {})),
-            errors=Errors.from_dict(data.get('errors', {}))
+            data=data.get('data'),
+            includes=Includes.from_dict(data.get('includes')),
+            meta=Meta.from_dict(data.get('meta')),
+            errors=Errors.from_dict(data.get('errors'))
         )

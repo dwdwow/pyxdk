@@ -20,7 +20,7 @@ class Meta:
             Meta object with pagination and result metadata
         """
         if not data:
-            return cls()
+            return None
             
         return cls(
             result_count=data.get('result_count'),

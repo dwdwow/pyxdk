@@ -13,6 +13,8 @@ class Errors:
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Errors':
+        if not data:
+            return None
         return cls(
             client_id=data.get('client_id'),
             required_enrollment=data.get('required_enrollment'),

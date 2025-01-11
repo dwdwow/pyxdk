@@ -15,13 +15,13 @@ class Client:
         self.__bearer_token__ = bearer_token
 
     def __init__(self, file_path: str, password: str):
-        token = eas.decrypt_from_file(file_path, password.encode())
+        token = eas.decrypt_from_file(file_path, bytes.fromhex(password))
         self.__bearer_token__ = token
         
     def __init__(self, file_path: str, input_password: bool):
         if input_password:
             password = getpass.getpass("Enter password: ")
-        token = eas.decrypt_from_file(file_path, password.encode())
+        token = eas.decrypt_from_file(file_path, bytes.fromhex(password))
         self.__bearer_token__ = token
         
     def __headers__(self):
@@ -98,7 +98,7 @@ class Client:
         else:
             raise ValueError(f"{status_code} - Unknown error occurred")
     
-    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData[Tweet]:
+    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData:
         return ResponseData.from_dict(self.get("tweets", ids, fields, expansions))
 
 
@@ -107,6 +107,8 @@ if __name__ == "__main__":
     home_dir = os.path.expanduser("~")
     token_path = os.path.join(home_dir, "pyxdk_test",  "bearer_token.pvt")
     res = Client(token_path, True).lookup_tweets(
-        ids=["1578900353814519810"],
+        ids=["1460323737035677698",
+        "1519781379172495360",
+        "1519781381693353984"],
     )
     print(res)

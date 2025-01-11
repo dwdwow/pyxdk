@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List as TypeList, Optional
 from datetime import datetime
-from user import User
 
 @dataclass
 class List:
