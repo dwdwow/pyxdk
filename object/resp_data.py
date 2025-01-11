@@ -1,15 +1,15 @@
 from dataclasses import dataclass
-from typing import Optional, TypeVar, TypedDict
-from object.community import Community
-from object.direct_msg_events import DirectMessageEvent
-from object.list import List
-from object.media import Media
-from object.meta import Meta
-from object.place import Place
-from object.poll import Poll
-from object.space import Space
-from object.tweet import Tweet
-from object.user import User
+from typing import TypeVar, TypedDict
+from community import Community
+from direct_msg_events import DirectMessageEvent
+from xlist import List
+from media import Media
+from meta import Meta
+from place import Place
+from poll import Poll
+from space import Space
+from tweet import Tweet
+from user import User
 
 
 DataItem = TypeVar('DataItem', Tweet, User, Space, List, Media, Poll, Place, Community, DirectMessageEvent)
@@ -43,6 +43,7 @@ RawData = TypedDict('RawData', {
 class ResponseData:
     data: list[DataItem]
     includes: Includes
+    meta: Meta | None = None
 
     @classmethod
     def from_dict(cls, data: RawData[DataItem]) -> 'ResponseData':

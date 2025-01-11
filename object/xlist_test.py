@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from list import List
+from object.xlist import List
 
 class TestList(unittest.TestCase):
     def setUp(self):
