@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 
-from object.annotation import Annotation
 
 @dataclass
 class PublicMetrics:
@@ -10,11 +10,13 @@ class PublicMetrics:
     like_count: int
     quote_count: int
 
+
 @dataclass
 class NonPublicMetrics:
     impression_count: int
     url_link_clicks: int
     user_profile_clicks: int
+
 
 @dataclass
 class OrganicMetrics:
@@ -25,6 +27,7 @@ class OrganicMetrics:
     url_link_clicks: int
     user_profile_clicks: int
 
+
 @dataclass
 class PromotedMetrics:
     impression_count: int
@@ -34,27 +37,65 @@ class PromotedMetrics:
     url_link_clicks: int
     user_profile_clicks: int
 
+
 @dataclass
 class Domain:
     id: str
     name: str
     description: str
 
+
 @dataclass
-class EntityAnnotation:
+class ContextEntityAnnotation:
     id: str
     name: str
     description: str | None = None
 
+
 @dataclass
 class ContextAnnotation:
     domain: Domain
-    entity: EntityAnnotation
+    entity: ContextEntityAnnotation
+
+
+class AnnotationType(Enum):
+    PERSON = "Person"
+    PLACE = "Place"
+    PRODUCT = "Product"
+    ORGANIZATION = "Organization"
+    OTHER = "Other"
+
+
+@dataclass
+class EntityAnnotation:
+    # All fields are optional
+    start: int | None = None
+    end: int | None = None  # Note: Currently inclusive, will be exclusive in v3
+    probability: float | None = None
+    annotation_type: AnnotationType | None = None
+    normalized_text: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'EntityAnnotation':
+        # Convert type string to enum if present
+        annotation_type = None
+        if 'type' in data:
+            annotation_type = AnnotationType(data['type'])
+        
+        return cls(
+            start=data.get('start'),
+            end=data.get('end'),
+            probability=data.get('probability'),
+            annotation_type=annotation_type,
+            normalized_text=data.get('normalized_text')
+        )
+
 
 @dataclass
 class ReferencedTweet:
     reference_type: str
     id: str
+
 
 @dataclass
 class EditControls:
@@ -62,10 +103,12 @@ class EditControls:
     is_edit_eligible: bool
     editable_until: datetime
 
+
 @dataclass
 class Withheld:
     copyright: bool
     country_codes: list[str]
+
 
 @dataclass
 class Cashtag:
@@ -73,17 +116,20 @@ class Cashtag:
     end: int  # Exclusive
     tag: str
 
+
 @dataclass
 class Hashtag:
     start: int
     end: int  # Exclusive
     tag: str
 
+
 @dataclass
 class Mention:
     start: int
     end: int  # Exclusive
     tag: str
+
 
 @dataclass
 class Url:
@@ -97,10 +143,11 @@ class Url:
     description: str | None = None
     unwound_url: str | None = None
 
+
 @dataclass
 class Entities:
     # All fields are optional as tweets may not have all types of entities
-    annotations: list[Annotation] | None = None
+    annotations: list[EntityAnnotation] | None = None
     cashtags: list[Cashtag] | None = None
     hashtags: list[Hashtag] | None = None
     mentions: list[Mention] | None = None
@@ -112,7 +159,7 @@ class Entities:
         annotations = None
         if 'annotations' in data:
             annotations = [
-                Annotation(
+                EntityAnnotation(
                     start=ann['start'],
                     end=ann['end'],
                     probability=ann['probability'],
@@ -184,6 +231,7 @@ class Entities:
             urls=urls
         )
 
+
 @dataclass
 class Tweet:
     # Required fields
@@ -229,7 +277,7 @@ class Tweet:
             context_annotations = []
             for annotation in data['context_annotations']:
                 domain = Domain(**annotation['domain'])
-                entity = EntityAnnotation(**annotation['entity'])
+                entity = ContextEntityAnnotation(**annotation['entity'])
                 context_annotations.append(ContextAnnotation(domain=domain, entity=entity))
         
         # Convert referenced tweets

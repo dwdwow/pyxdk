@@ -2,8 +2,8 @@ import unittest
 from datetime import datetime
 from tweet import (
     Tweet, PublicMetrics, NonPublicMetrics, OrganicMetrics, PromotedMetrics,
-    Domain, EntityAnnotation, ContextAnnotation, ReferencedTweet, EditControls,
-    Withheld, Entities, Annotation, Cashtag, Hashtag, Mention, Url
+    Domain, ContextEntityAnnotation, ContextAnnotation, ReferencedTweet, EditControls,
+    Withheld, Entities, EntityAnnotation, Cashtag, Hashtag, Mention, Url
 )
 
 class TestTweet(unittest.TestCase):

@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-from typing import Optional
 
 @dataclass
 class Meta:
-    result_count: Optional[int] = None
-    oldest_id: Optional[str] = None
-    newest_id: Optional[str] = None
-    next_token: Optional[str] = None
-    previous_token: Optional[str] = None
+    result_count: int | None = None
+    oldest_id: str | None = None
+    newest_id: str | None = None
+    next_token: str | None = None
+    previous_token: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Meta':
