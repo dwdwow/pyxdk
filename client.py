@@ -4,7 +4,9 @@ import getpass
 import requests
 import eas
 from object.fields import Field
+from object.resp_data import ResponseData
 from object.tweet import Tweet
+from object.user import User
 
 
 base_url = "https://api.x.com/2"
@@ -63,9 +65,15 @@ class Client:
         response = requests.get(url, headers=self.__headers__())
         return response.json()
     
-    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]], expansions: list[Enum]) -> Tweet:
-        return self.__get__("tweets", ids, fields, expansions)
+    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData[Tweet]:
+        return ResponseData.from_dict(self.__get__("tweets", ids, fields, expansions))
 
 
 if __name__ == "__main__":
-    pass
+    import os
+    home_dir = os.path.expanduser("~")
+    token_path = os.path.join(home_dir, "pyxdk_test",  "bearer_token.pvt")
+    res = Client(token_path, True).lookup_tweets(
+        ids=["1578900353814519810"],
+    )
+    print(res)
