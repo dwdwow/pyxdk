@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import TypeVar, TypedDict
 from community import Community
 from direct_msg_events import DirectMessageEvent
+from errors import Errors
 from xlist import List
 from media import Media
 from meta import Meta
@@ -44,6 +45,7 @@ class ResponseData:
     data: list[DataItem]
     includes: Includes
     meta: Meta | None = None
+    errors: Errors | None = None
 
     @classmethod
     def from_dict(cls, data: RawData[DataItem]) -> 'ResponseData':

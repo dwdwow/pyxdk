@@ -3,10 +3,10 @@ import getpass
 
 import requests
 import eas
-from object.fields import Field
-from object.resp_data import ResponseData
-from object.tweet import Tweet
-from object.user import User
+from objects.fields import Field
+from objects.resp_data import ResponseData
+from objects.tweet import Tweet
+from objects.user import User
 
 
 base_url = "https://api.x.com/2"
