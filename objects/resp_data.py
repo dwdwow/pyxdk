@@ -35,21 +35,25 @@ class Includes:
     
     
 RawData = TypedDict('RawData', {
-    'data': list[DataItem],
-    'includes': Includes
+    'data': list[DataItem] | None,  
+    'includes': Includes | None,
+    'meta': Meta | None,
+    'errors': Errors | None
 })
 
 
 @dataclass
 class ResponseData:
-    data: list[DataItem]
-    includes: Includes
+    data: list[DataItem] | None
+    includes: Includes | None
     meta: Meta | None = None
     errors: Errors | None = None
 
     @classmethod
     def from_dict(cls, data: RawData[DataItem]) -> 'ResponseData':
         return cls(
-            data=[DataItem.from_dict(item) for item in data['data']],
-            includes=Includes.from_dict(data['includes'])
+            data=[DataItem.from_dict(item) for item in data.get('data', [])],
+            includes=Includes.from_dict(data.get('includes', {})),
+            meta=Meta.from_dict(data.get('meta', {})),
+            errors=Errors.from_dict(data.get('errors', {}))
         )

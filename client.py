@@ -6,7 +6,6 @@ import eas
 from objects.fields import Field
 from objects.resp_data import ResponseData
 from objects.tweet import Tweet
-from objects.user import User
 
 
 base_url = "https://api.x.com/2"
