@@ -3,7 +3,8 @@ import getpass
 
 import requests
 import eas
-from objects.fields import Field
+from objects.expansions import ArgExpansions
+from objects.fields import ArgFields
 from objects.resp_data import ResponseData
 from objects.tweet import Tweet
 
@@ -29,7 +30,7 @@ class Client:
             "Authorization": f"Bearer {self.__bearer_token__}"
         }
 
-    def get[D](self, path: str, ids: list[str] = None, fields: dict[Field, list[Enum]] = None, expansions: list[Enum] = None, other_params: dict = None) -> ResponseData[D]:
+    def get[D](self, path: str, ids: list[str] = None, fields: ArgFields = None, expansions: ArgExpansions = None, other_params: dict = None) -> ResponseData[D]:
         url = f"{base_url}/{path.strip('/')}"
         queries: list[str] = []
         if ids:
@@ -64,11 +65,11 @@ class Client:
         response = requests.get(url, headers=self.__headers__())
         status_code = response.status_code
         if status_code == 200:
-            return response.json()
+            return ResponseData[D].from_dict(response.json())
         elif status_code == 304:
             # Not Modified
             # There was no new data to return.
-            return None  # No new data
+            return ResponseData[D](data=None, includes=None, meta=None, errors=None)  # No new data
         elif status_code == 400:
             raise ValueError(f"{status_code} - Bad Request - Invalid parameters")
         elif status_code == 401:
@@ -98,8 +99,8 @@ class Client:
         else:
             raise ValueError(f"{status_code} - Unknown error occurred")
     
-    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData[list[Tweet]]:
-        return ResponseData.from_dict(self.get("tweets", ids, fields, expansions))
+    def lookup_tweets(self, ids: list[str], fields: ArgFields=None, expansions: ArgExpansions=None) -> ResponseData[list[Tweet]]:
+        return self.get("tweets", ids, fields, expansions)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class PostPayloadExpansion(Enum):
+class TweetPayloadExpansion(Enum):
     """Expansions available for Post objects"""
     AUTHOR_ID = "author_id"
     REFERENCED_TWEETS_ID = "referenced_tweets.id" 
@@ -85,3 +85,6 @@ class ListPayloadExpansion(Enum):
     def all_expansions(cls) -> str:
         """Returns comma-separated string of all available expansions"""
         return cls.OWNER_ID.value
+
+
+ArgExpansions = list[TweetPayloadExpansion | UserPayloadExpansion | DirectMessageEventPayloadExpansion | SpacePayloadExpansion | ListPayloadExpansion]

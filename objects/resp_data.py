@@ -57,7 +57,7 @@ class Includes:
 
 @dataclass
 class ResponseData[D]:
-    data: D
+    data: D | None
     includes: Includes | None
     meta: Meta | None = None
     errors: Errors | None = None

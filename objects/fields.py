@@ -304,3 +304,9 @@ class ListField(Enum):
     PRIVATE = "private"
     DESCRIPTION = "description"
     OWNER_ID = "owner_id"
+
+
+ArgFields = dict[Field, list[TweetField | UserField | TrendField | SpaceField | TopicField | DirectMessageEventField | MediaField | PollField | PlaceField | CommunityField | ListField]]
+
+
+
