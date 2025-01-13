@@ -13,8 +13,8 @@ from objects.tweet import Tweet
 from objects.user import User
 
 
-DataItem = TypeVar('DataItem', Tweet, User, Space, List, Media, Poll, Place, Community, DirectMessageEvent)
-RespDataType = TypeVar('RespDataType', list[DataItem], DataItem, None)
+# DataItem = TypeVar('DataItem', Tweet, User, Space, List, Media, Poll, Place, Community, DirectMessageEvent)
+# RespDataType = TypeVar('RespDataType', list[DataItem], DataItem, None)
 
 
 @dataclass
@@ -47,23 +47,23 @@ class Includes:
         )
     
     
-RawData = TypedDict('RawData', {
-    'data': RespDataType,  
-    'includes': Includes | None,
-    'meta': Meta | None,
-    'errors': Errors | None
-})
+# RawData = TypedDict('RawData', {
+#     'data': RespDataType,  
+#     'includes': Includes | None,
+#     'meta': Meta | None,
+#     'errors': Errors | None
+# })
 
 
 @dataclass
-class ResponseData:
-    data: RespDataType
+class ResponseData[D]:
+    data: D
     includes: Includes | None
     meta: Meta | None = None
     errors: Errors | None = None
 
     @classmethod
-    def from_dict(cls, data: RawData) -> 'ResponseData':
+    def from_dict[D](cls, data: dict) -> 'ResponseData[D]':
         return cls(
             data=data.get('data'),
             includes=Includes.from_dict(data.get('includes')),

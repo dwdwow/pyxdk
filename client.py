@@ -29,7 +29,7 @@ class Client:
             "Authorization": f"Bearer {self.__bearer_token__}"
         }
 
-    def get(self, path: str, ids: list[str] = None, fields: dict[Field, list[Enum]] = None, expansions: list[Enum] = None, other_params: dict = None) -> any:
+    def get[D](self, path: str, ids: list[str] = None, fields: dict[Field, list[Enum]] = None, expansions: list[Enum] = None, other_params: dict = None) -> ResponseData[D]:
         url = f"{base_url}/{path.strip('/')}"
         queries: list[str] = []
         if ids:
@@ -98,7 +98,7 @@ class Client:
         else:
             raise ValueError(f"{status_code} - Unknown error occurred")
     
-    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData:
+    def lookup_tweets(self, ids: list[str], fields: dict[Field, list[Enum]]=None, expansions: list[Enum]=None) -> ResponseData[list[Tweet]]:
         return ResponseData.from_dict(self.get("tweets", ids, fields, expansions))
 
 
