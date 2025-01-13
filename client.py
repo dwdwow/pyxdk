@@ -11,6 +11,24 @@ from objects.tweet import Tweet
 
 base_url = "https://api.x.com/2"
 
+
+status_code_reasons = {
+    400: "Bad Request - Invalid parameters",
+    401: "Unauthorized - Authentication failed",
+    403: "Forbidden - Access not allowed", 
+    404: "Not Found - Invalid URI or resource does not exist",
+    406: "Not Acceptable - Invalid format specified",
+    409: "Connection Exception - No rules defined for filtered stream",
+    410: "Gone - API endpoint has been turned off",
+    422: "Unprocessable Entity - Invalid data format",
+    429: "Too Many Requests - Rate limit exceeded",
+    500: "Internal Server Error",
+    502: "Bad Gateway - Twitter is down or being upgraded",
+    503: "Service Unavailable - Server overloaded",
+    504: "Gateway Timeout - Request timed out"
+}
+
+
 class Client:
     def __init__(self, bearer_token: str):
         self.__bearer_token__ = bearer_token
@@ -70,34 +88,7 @@ class Client:
             # Not Modified
             # There was no new data to return.
             return ResponseData[D](data=None, includes=None, meta=None, errors=None)  # No new data
-        elif status_code == 400:
-            raise ValueError(f"{status_code} - Bad Request - Invalid parameters")
-        elif status_code == 401:
-            raise ValueError(f"{status_code} - Unauthorized - Authentication failed") 
-        elif status_code == 403:
-            raise ValueError(f"{status_code} - Forbidden - Access not allowed")
-        elif status_code == 404:
-            raise ValueError(f"{status_code} - Not Found - Invalid URI or resource does not exist")
-        elif status_code == 406:
-            raise ValueError(f"{status_code} - Not Acceptable - Invalid format specified")
-        elif status_code == 409:
-            raise ValueError(f"{status_code} - Connection Exception - No rules defined for filtered stream")
-        elif status_code == 410:
-            raise ValueError(f"{status_code} - Gone - API endpoint has been turned off")
-        elif status_code == 422:
-            raise ValueError(f"{status_code} - Unprocessable Entity - Invalid data format")
-        elif status_code == 429:
-            raise ValueError(f"{status_code} - Too Many Requests - Rate limit exceeded")
-        elif status_code == 500:
-            raise ValueError(f"{status_code} - Internal Server Error")
-        elif status_code == 502:
-            raise ValueError(f"{status_code} - Bad Gateway - Twitter is down or being upgraded")
-        elif status_code == 503:
-            raise ValueError(f"{status_code} - Service Unavailable - Server overloaded")
-        elif status_code == 504:
-            raise ValueError(f"{status_code} - Gateway Timeout - Request timed out")
-        else:
-            raise ValueError(f"{status_code} - Unknown error occurred")
+        raise ValueError(f"{status_code} - {status_code_reasons.get(status_code, "Unknown error occurred")}")
     
     def lookup_tweets(self, ids: list[str], fields: ArgFields=None, expansions: ArgExpansions=None) -> ResponseData[list[Tweet]]:
         return self.get("tweets", ids, fields, expansions)
